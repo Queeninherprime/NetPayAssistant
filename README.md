@@ -57,6 +57,15 @@ The system operates on a three-phase asynchronous transactional workflow:
   │ (create_order.py) │        │ (PayPal Sandbox UI)  │        │ (capture_order.py)│
   └───────────────────┘        └──────────────────────┘        └───────────────────┘
 
+
+            │                                                            ▲
+            │                 ┌────────────────────┐                     │
+            └───────────────> │ Local State File   │ ────────────────────┘
+                              │   (order_id.txt)   │
+                              └────────────────────┘
+
+
+
 NetPayAssistant/
 │
 ├── create_order.py      # OAuth2 authentication, order creation, and state file serialization
@@ -65,8 +74,3 @@ NetPayAssistant/
 ├── order_id.txt         # Auto-generated ephemeral local storage for Order ID tracking
 ├── .gitignore           # Prevents committing environment keys, logs, and transient state files
 └── README.md            # System documentation and operational guide
-            │                                                            ▲
-            │                 ┌────────────────────┐                     │
-            └───────────────> │ Local State File   │ ────────────────────┘
-                              │   (order_id.txt)   │
-                              └────────────────────┘
