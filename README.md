@@ -56,6 +56,15 @@ The system operates on a three-phase asynchronous transactional workflow:
   │ 1. Create Phase   │ ─────> │ 2. Buyer Approval    │ ─────> │ 3. Capture Phase  │
   │ (create_order.py) │        │ (PayPal Sandbox UI)  │        │ (capture_order.py)│
   └───────────────────┘        └──────────────────────┘        └───────────────────┘
+
+NetPayAssistant/
+│
+├── create_order.py      # OAuth2 authentication, order creation, and state file serialization
+├── capture_order.py     # State file deserialization and payment capture execution
+├── test_paypal.py       # API handshake verification and token authorization check
+├── order_id.txt         # Auto-generated ephemeral local storage for Order ID tracking
+├── .gitignore           # Prevents committing environment keys, logs, and transient state files
+└── README.md            # System documentation and operational guide
             │                                                            ▲
             │                 ┌────────────────────┐                     │
             └───────────────> │ Local State File   │ ────────────────────┘
