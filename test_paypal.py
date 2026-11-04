@@ -2,8 +2,8 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 # Your PayPal Sandbox API Credentials
-CLIENT_ID = "BAAFJI9ugIeqEQrSHQcMv6T6fFJl-ob7ZzVhiTm_Hzjme34vMEULQuukyR88K3OxmcAfDCFZOi6nhJoCP0"
-CLIENT_SECRET = "EHLaoLlF0ObIoBDZZZNn9XLzQqJ5OyNf7amz90Kcq70UgWG6vemS_nKnsguO9Pc4EpXgeBz_zNdlxnOJ"
+CLIENT_ID = "BAAhSEw3XOTadnz1QpRNaHPqbUEwsuxjTCZEFXgParHwf-F9Kki-mSHczkT_XVPnUmEB8vz8h48W2Bqg70"
+CLIENT_SECRET = "EMY1pR6YyB4WPr1LnC2rtbcT3ifimdV21HhRoW0UXIx5pCiGUvJ_X_ycGWq8NBK8y7LH1iFe7PpADhlH"
 
 # PayPal Sandbox API URL for getting an Access Token
 url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
