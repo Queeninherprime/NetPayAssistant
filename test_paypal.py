@@ -1,9 +1,15 @@
+import os
 import requests
 from requests.auth import HTTPBasicAuth
 
-# Your PayPal Sandbox API Credentials
-CLIENT_ID = "BAAhSEw3XOTadnz1QpRNaHPqbUEwsuxjTCZEFXgParHwf-F9Kki-mSHczkT_XVPnUmEB8vz8h48W2Bqg70"
-CLIENT_SECRET = "EMY1pR6YyB4WPr1LnC2rtbcT3ifimdV21HhRoW0UXIx5pCiGUvJ_X_ycGWq8NBK8y7LH1iFe7PpADhlH"
+# Securely retrieve PayPal Sandbox API Credentials from environment variables
+CLIENT_ID = os.environ.get("PAYPAL_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("PAYPAL_CLIENT_SECRET")
+
+# Validation check to ensure variables are set
+if not CLIENT_ID or not CLIENT_SECRET:
+    print("ERROR: PAYPAL_CLIENT_ID or PAYPAL_CLIENT_SECRET environment variables are missing!")
+    exit(1)
 
 # PayPal Sandbox API URL for getting an Access Token
 url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
