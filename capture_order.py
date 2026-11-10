@@ -1,13 +1,17 @@
-
+import os
 import requests
 from requests.auth import HTTPBasicAuth
 from ai_assistant import NetPayAIAnalyzer
 
-# Your PayPal Sandbox API Credentials
-CLIENT_ID = "BAAhSEw3XOTadnz1QpRNaHPqbUEwsuxjTCZEFXgParHwf-F9Kki-mSHczkT_XVPnUmEB8vz8h48W2Bqg70"
-CLIENT_SECRET = "EMY1pR6YyB4WPr1LnC2rtbcT3ifimdV21HhRoW0UXIx5pCiGUvJ_X_ycGWq8NBK8y7LH1iFe7PpADhlH"
+# 1. Securely load credentials from environment variables
+CLIENT_ID = os.environ.get("PAYPAL_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("PAYPAL_CLIENT_SECRET")
 
-# 1. Request an OAuth 2.0 access token
+if not CLIENT_ID or not CLIENT_SECRET:
+    print("❌ ERROR: PAYPAL_CLIENT_ID or PAYPAL_CLIENT_SECRET environment variables are missing!")
+    exit(1)
+
+# 2. Request an OAuth 2.0 access token using client credentials flow
 token_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
 token_response = requests.post(
     token_url,
@@ -19,35 +23,44 @@ token_response = requests.post(
 if token_response.status_code == 200:
     access_token = token_response.json().get("access_token")
 else:
-    print(f"FAILED to get token: {token_response.status_code} {token_response.text}")
-    exit()
+    print(f"❌ FAILED to get token: {token_response.status_code} {token_response.text}")
+    exit(1)
 
-# 2. Read the saved Order ID from order_id.txt
+# 3. Read the saved active transaction state from order_id.txt
 try:
     with open("order_id.txt", "r") as f:
         ORDER_ID = f.read().strip()
-    print(f"Loaded Order ID: {ORDER_ID} from order_id.txt")
-except FileNotFoundError:
-    print("Error: order_id.txt not found. Run create_order.py first!")
-    exit()
+    if not ORDER_ID:
+        raise ValueError("order_id.txt is empty.")
+    print(f"💾 Loaded Order ID state: {ORDER_ID}")
+except (FileNotFoundError, ValueError):
+    print("❌ ERROR: Active Order ID state missing. Run create_order.py and approve the checkout flow first!")
+    exit(1)
 
-# 3. Send Capture Request to PayPal
+# 4. Send the Capture Request to the PayPal Sandbox API
 capture_url = f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{ORDER_ID}/capture"
 headers = {
     "Content-Type": "application/json",
     "Authorization": f"Bearer {access_token}"
 }
 
+print("🔄 Attempting to capture payment with PayPal API...")
 capture_response = requests.post(capture_url, headers=headers)
 
-# 4. Handle Response & AI Error Diagnostics
-if capture_response.status_code in [200, 201]:
+# 5. Handle Response & AI Error Diagnostics
+if capture_response.status_code in:
     capture_data = capture_response.json()
-    print("\nPayment Captured Successfully!")
-    print(f"Status: {capture_data.get('status')}")
-    print(f"Transaction ID: {capture_data.get('id')}")
+    print("\n🎉 Payment Captured Successfully!")
+    print(f"💳 Status: {capture_data.get('status')}")
+    print(f"🔑 Transaction ID: {capture_data.get('id')}")
 else:
-    # AI Assistant catches the error and provides plain-English troubleshooting
-    print("\nCapture Failed!")
+    print("\n❌ Capture Failed!")
+    print(f"Raw Status Code: {capture_response.status_code}")
+    print("🔄 Passing raw payload to NetPayAIAnalyzer diagnostic engine...")
+    
+    # AI Assistant extracts the schema and gives plain-English troubleshooting steps
     ai_diagnosis = NetPayAIAnalyzer.translate_api_error(capture_response.status_code, capture_response.text)
-    print(ai_diagnosis)
+    print(f"\n🤖 AI Diagnostic Assistant Response:\n{ai_diagnosis}")
+
+
+  
