@@ -1,41 +1,112 @@
-# NetPayAssistant 💳🤖
+# 💳🤖 NetPayAssistant
 
-**NetPayAssistant** is an AI-powered developer toolkit and payment middleware designed to streamline the PayPal checkout lifecycle. Built for modern e-commerce and developer workflows, it automates the **Create-Approve-Capture** state machine, offers local transaction state persistence, and integrates custom AI analytics to detect fraud risks and provide human-readable API diagnostics.
+**AI-Powered Developer Toolkit & Payment Middleware for the PayPal Checkout Lifecycle**
 
----
-
-## 🌟 Importance to Users & to PayPal
-
-### **To Users (Shoppers & Merchants)**
-* **Seamless Checkout Experience:** Customers enjoy frictionless online payments through PayPal’s trusted checkout environment.
-* **Pre-Transaction AI Protection:** Merchants are protected from fraud *before* chargebacks happen, thanks to automated AI risk analysis on transaction details (cart value, buyer email, location).
-* **Faster Problem Resolution:** Clear error reporting reduces abandoned carts caused by payment glitches.
-
-### **To PayPal (Ecosystem & Platform)**
-* **Lower Support Burden:** Instead of vague HTTP errors (`400 Bad Request` or `422 Unprocessable Entity`), developers receive plain-English diagnostics, cutting down on integration support tickets.
-* **Enhanced Fraud Shielding:** Intelligent pre-validation ensures fewer high-risk or malicious transactions hit PayPal's main payment processing channels.
-* **Developer Adoption:** Clean, open middleware makes integrating PayPal APIs accessible to engineers of all skill levels.
+NetPayAssistant streamlines PayPal sandbox and e-commerce integrations by automating the **Create → Approve → Capture** state machine, running pre-transaction AI fraud risk assessments, and translating cryptic PayPal API errors into plain-English troubleshooting steps.
 
 ---
 
-## ⚡ Key Advantages & Benefits for the Public
+## 🌟 Why NetPayAssistant Matters
 
-* **🤖 AI-Driven Error Diagnostic Engine:** Converts cryptic API response payloads into clear, actionable troubleshooting steps for developers in real time.
-* **🛡️ Smart Risk Analysis:** Calculates a real-time risk score (`LOW`, `MEDIUM`, or `HIGH`) before interacting with payment endpoints.
-* **🔄 Zero-Database State Machine:** Uses local file-piping (`order_id.txt`) to hand off active transaction states smoothly between `create_order.py` and `capture_order.py`.
-* **⚡ Lightweight & Dependency-Free:** Relies only on Python's native `requests` library without heavy framework overhead.
+### For Developers & Merchants
+* **Plain-English API Diagnostics:** Replaces vague HTTP `400 Bad Request` and `422 Unprocessable Entity` JSON payloads with clear, actionable root-cause explanations in real time.
+* **Pre-Transaction Fraud Shield:** Evaluates cart value, buyer email patterns, and IP/location signals *before* hitting payment endpoints, blocking high-risk orders before chargebacks occur.
+* **Zero-Database State Machine:** Persists active order states locally (`order_id.txt`) between creation and capture scripts without heavy database or framework overhead.
+
+### For the PayPal Ecosystem
+* **Lower Developer Support Burden:** Self-diagnosing error logs reduce integration friction and support tickets for new and experienced builders.
+* **Cleaner Transaction Traffic:** Pre-screening suspicious metadata prevents malicious requests from reaching PayPal's core payment channels.
 
 ---
 
-## 📁 Repository Structure
+## 🏗️ Architecture & Repository Structure
 
 ```text
 NetPayAssistant/
 │
-├── create_order.py     # Requests OAuth 2.0 token, runs AI fraud check, & creates PayPal order
-├── capture_order.py    # Reads order ID & completes payment capture with AI error handling
-├── ai_assistant.py     # AI module: NetPayAIAnalyzer (Fraud Scoring & Error Translation)
-├── test_paypal.py      # Environment & sandbox credential validation script
-├── order_id.txt        # Local state storage for piping active order IDs between scripts
-├── .gitignore          # Excludes environment files, caches, and local tracking files
-└── README.md           # Project documentation
+├── create_order.py     # Authenticates via OAuth 2.0, runs AI fraud check, & creates PayPal order
+├── capture_order.py    # Reads active order ID & captures payment with AI error diagnostics
+├── ai_assistant.py     # NetPayAIAnalyzer: Pre-authorization risk scoring & error translation
+├── test_paypal.py      # Validates PayPal Sandbox credentials & OAuth token generation
+├── order_id.txt        # Local state persistence between order creation and capture
+├── .gitignore          # Excludes .env secrets, caches, and IDE files
+└── LICENSE             # MIT Open-Source License
+```
+
+---
+
+## ⚡ Quickstart Guide (Run in 2 Minutes)
+
+### 1. Prerequisites
+* Python 3.8+
+* A free [PayPal Developer Sandbox](https://paypal.com) account (`Client ID` and `Secret`)
+
+### 2. Clone & Install Dependencies
+NetPayAssistant is intentionally lightweight and relies only on Python's `requests` library:
+```bash
+git clone https://github.com
+cd NetPayAssistant
+pip install requests
+```
+
+### 3. Configure Environment Variables
+Set your PayPal Sandbox credentials in your terminal (never hardcode secrets):
+
+**Windows (PowerShell):**
+```powershell
+$env:PAYPAL_CLIENT_ID="your_sandbox_client_id"
+$env:PAYPAL_CLIENT_SECRET="your_sandbox_client_secret"
+```
+
+**macOS / Linux:**
+```bash
+export PAYPAL_CLIENT_ID="your_sandbox_client_id"
+export PAYPAL_CLIENT_SECRET="your_sandbox_client_secret"
+```
+
+### 4. Run the Workflow
+```bash
+# Step 1: Verify Sandbox credentials
+python test_paypal.py
+
+# Step 2: Run AI fraud check & create a PayPal order
+python create_order.py
+
+# Step 3: Approve the generated link in your browser, then capture payment
+python capture_order.py
+```
+
+---
+
+## 🖥️ Example Output
+
+### Pre-Transaction AI Risk Check (`create_order.py`)
+```text
+[AI Risk Engine] Evaluating transaction metadata...
+Risk Score: 15.0 / 100 | Status: LOW RISK
+Flags: ['Sandbox/Test domain detected (Normal for testing).']
+[PayPal API] Order Created Successfully! Order ID: 0Y506807S1955411D
+```
+
+### Plain-English Error Diagnostic (`capture_order.py`)
+```text
+[PayPal API Error] HTTP 422 - ORDER_NOT_APPROVED
+[NetPayAssistant AI Diagnostic]:
+  -> Cause: The buyer has not completed checkout approval yet.
+  -> Fix: Open the 'approve' link from create_order.py in your browser, log in with a Sandbox Buyer account, and click 'Complete Purchase' before running capture_order.py.
+```
+
+---
+
+## 🛠️ Tech Stack
+* **Language:** Python 3
+* **Payment API:** PayPal REST API v2 (OAuth 2.0, Orders API)
+* **HTTP Client:** `requests`
+* **AI Engine:** Custom `NetPayAIAnalyzer` heuristic & diagnostic engine
+
+---
+
+## 📄 License
+This project is open-source and available under the [MIT License](LICENSE).
+
+
